@@ -1,0 +1,47 @@
+#!/bin/bash
+
+CYAN='\033[0;96m'
+PINK='\033[0;95m'
+GREEN='\033[0;92m'
+RED='\033[0;91m'
+LAVENDER='\033[0;94m'
+PEACH='\033[0;93m'
+
+NC='\033[0m' 
+
+DOT='󰝥'
+
+if [ -f "/etc/os-release" ]; then
+    source /etc/os-release
+    distribution="$PRETTY_NAME"
+else
+    distribution="$(uname -s)"
+fi
+
+
+kernel="$(uname -r)"
+
+
+if command -v rpm &> /dev/null; then
+    package_count="$(rpm -qa | wc -l) (rpm)"
+else
+    package_count="N/A"
+fi
+
+
+if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+    window_manager="$XDG_CURRENT_DESKTOP"
+elif [ -n "$DESKTOP_SESSION" ]; then
+    window_manager="$DESKTOP_SESSION"
+else
+    window_manager="N/A"
+fi
+
+
+echo -e "
+         ${CYAN}${NC} ${distribution}
+ /\_/\   ${PINK}${NC} ${kernel}
+(=^ω^=)  ${GREEN}󰏔${NC} ${package_count}
+(\_/)    ${RED}󱡶${NC} ${window_manager}
+         ${GREEN}${DOT}${NC} ${PINK}${DOT}${NC} ${RED}${DOT}${NC} ${CYAN}${DOT}${NC} ${LAVENDER}${DOT}${NC} ${PEACH}${DOT}${NC}
+"
