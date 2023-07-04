@@ -1,38 +1,27 @@
-
 use sysinfo::{System, SystemExt};
 use std::env;
 
+// Colors
+const BLACK: &str = "\x1b[30m";
+const WHITE: &str = "\x1b[37m";
+const YELLOW: &str = "\x1b[33m";
+const CYAN: &str = "\x1b[0;96m";
+const PINK: &str = "\x1b[0;95m";
+const GREEN: &str = "\x1b[0;92m";
+const RED: &str = "\x1b[0;91m";
+const LAVENDER: &str = "\x1b[0;94m";
+const PEACH: &str = "\x1b[0;93m";
+const DOT: &str = "";
+const NC: &str = "\x1b[0m";
+
 fn main() {
-    // Penguin Colours
-    const BLACK: &str = "\x1b[30m";
-    const WHITE: &str = "\x1b[37m";
-    const YELLOW: &str = "\x1b[33m";
-
-    // Text Colours
-    const CYAN: &str = "\x1b[0;96m";
-    const PINK: &str = "\x1b[0;95m";
-    const GREEN: &str = "\x1b[0;92m";
-    const RED: &str = "\x1b[0;91m";
-    const LAVENDER: &str = "\x1b[0;94m";
-    const PEACH: &str = "\x1b[0;93m";
-
-    // Misc
-    const DOT: &str = "";
-    const NC: &str = "\x1b[0m";
-
-    println!("");
+    println!();
     println!("{}   _~_   {}  {}os:{} {}", BLACK, WHITE, CYAN, NC, get_os_name());
     println!("{}  (o o)  {}  {}shell:{} {}", BLACK, WHITE, PINK, NC, get_shell_name());
     println!("{} /  V  \\ {}  {}wm:{} {}", YELLOW, WHITE, GREEN, NC, get_desktop_environment());
-    println!(
-        "{}/(  _  )\\{}  {}ram:{} {}",
-        YELLOW, WHITE, RED, NC, get_ram_usage()
-    );
-    println!(
-        "{}  ^^ ^^  {}   {}{}{} {}{}{} {}{}{} {}{}{} {}{}{} {}{}{}",
-        WHITE, WHITE, CYAN, DOT, NC, PINK, DOT, NC, GREEN, DOT, NC, RED, DOT, NC, LAVENDER, DOT, NC, PEACH, DOT, NC
-    );
-    println!("");
+    println!("{}/(  _  )\\{}  {}ram:{} {}", YELLOW, WHITE, RED, NC, get_ram_usage());
+    println!("{}  ^^ ^^  {}   {}{}{} {}{}{} {}{}{} {}{}{} {}{}{} {}{}{}", WHITE, WHITE, CYAN, DOT, NC, PINK, DOT, NC, GREEN, DOT, NC, RED, DOT, NC, LAVENDER, DOT, NC, PEACH, DOT, NC);
+    println!();
 }
 
 fn get_ram_usage() -> String {
@@ -49,46 +38,29 @@ fn get_os_name() -> String {
     let mut system = System::new_all();
     system.refresh_system();
 
-    if let Some(name) = system.name() {
-        name
-    } else {
-        "Not Found".to_string()
-    }
+    system.name().unwrap_or_else(|| "Not Found".to_string())
 }
+
 fn get_shell_name() -> String {
-    if let Ok(shell) = env::var("SHELL") {
-        if let Some(file_name) = std::path::Path::new(&shell).file_name() {
-            if let Some(name) = file_name.to_str() {
-                return String::from(name);
-            }
-        }
-    }
-
-    String::from("bash")
+    env::var("SHELL")
+        .ok()
+        .and_then(|shell| std::path::Path::new(&shell).file_name().map(|file_name| file_name.to_owned()))
+        .and_then(|file_name| file_name.to_str().map(|name| name.to_owned()))
+        .unwrap_or_else(|| "bash".to_string())
 }
-
 
 
 fn get_desktop_environment() -> String {
-    if cfg!(target_os = "linux") {
-        if let Some(de_name) = get_de_name() {
-            return de_name;
-        } else if let Some(wm_name) = get_wm_name() {
-            return wm_name;
-        }
-    } else if cfg!(target_os = "windows") {
-        return "Desktop Window Manager".to_string();
-    } else if cfg!(target_os = "macos") {
-        return "Aqua".to_string();
+    match std::env::var("XDG_CURRENT_DESKTOP").ok() {
+        Some(de_name) => de_name,
+        None => std::env::var("XDG_SESSION_DESKTOP").ok().unwrap_or_else(|| {
+            if cfg!(target_os = "windows") {
+                "Desktop Window Manager".to_string()
+            } else if cfg!(target_os = "macos") {
+                "Aqua".to_string()
+            } else {
+                "None".to_string()
+            }
+        }),
     }
-
-    String::from("None")
-}
-
-fn get_de_name() -> Option<String> {
-    env::var("XDG_CURRENT_DESKTOP").ok()
-}
-
-fn get_wm_name() -> Option<String> {
-    env::var("XDG_SESSION_DESKTOP").ok()
 }
