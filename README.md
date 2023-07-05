@@ -31,24 +31,24 @@ Please note that changing the terminal font is optional, and you can continue to
 
 To use AkaiFetch, you can download the precompiled executable binary for your platform from the [GitHub Releases](https://github.com/AmazingAkai/afetch/releases) page.
 
-### Linux
+### Install binary using wget
 
 ```bash
 sudo wget -O /usr/bin/afetch https://github.com/AmazingAkai/afetch/releases/download/v1.0.0/afetch
+```
+
+### Install binary using curl
+
+```bash
+sudo curl -Lo /usr/bin/afetch https://github.com/AmazingAkai/afetch/releases/download/v1.0.0/afetch
+```
+
+### Set up permissions
+
+```bash
 sudo chmod +x /usr/bin/afetch
 ```
 
-### MacOS
-
-```bash
-sudo curl -Lo /usr/local/bin/afetch https://github.com/AmazingAkai/afetch/releases/download/v1.0.0/afetch
-sudo chmod +x /usr/local/bin/afetch
-```
-
-
-### Windows
-
-Currently, we do not provide a precompiled Windows binary. However, you can build the project from source by following the steps below.
 
 ## Build From Source
 
